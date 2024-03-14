@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout SCM using the specified Git tool
-                git branch: 'main', url: 'https://github.com/shawanaGideon/spring-petclinic.git'
+                git branch: 'main', url: 'https://github.com/T0s3p/spring-petclinic.git'
             }
         }
 
