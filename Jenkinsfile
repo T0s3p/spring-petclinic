@@ -6,8 +6,8 @@ pipeline {
     }
 
     tools {
-        git 'G3'
-        maven 'M3'
+        git 'Default'
+        maven 'Maven'
     }
 
     stages {
