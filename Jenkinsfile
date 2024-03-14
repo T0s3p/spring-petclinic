@@ -18,7 +18,7 @@ pipeline {
             }
             post {
                 always {
-                    jacoco:publish
+                    jacocoPublish()
                 }
             }
         }
