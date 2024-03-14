@@ -1,29 +1,43 @@
 pipeline {
     agent any
-    tools{
-       maven 'Maven'
-    }
 
     triggers {
-        cron('H(0-59)/10 * * * 1')
+        cron('H/10 * * * 4')
+    }
+
+    tools {
+        maven 'maven'
     }
 
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                tool 'Maven'
+                sh 'mvn clean package'
             }
         }
 
-        stage('Code Coverage') {
+        stage('Test with JaCoCo') {
             steps {
-                sh 'mvn jacoco:prepare-agent test jacoco:report'
+                tool 'Maven'
+                sh 'mvn test jacoco:report'
             }
+
             post {
                 always {
-                    jacocoPublish()
+                    jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java'
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build was successful!'
+        }
+
+        failure {
+            echo 'Build failed.'
         }
     }
 }
