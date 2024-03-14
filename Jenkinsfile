@@ -2,42 +2,36 @@ pipeline {
     agent any
 
     triggers {
-        cron('H/10 * * * 4')
+        cron('H */10 * * 4') // Trigger every 10 minutes on Thursdays
     }
 
     tools {
-        maven 'Maven'
+        git 'G3'
+        maven 'M3'
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                tool 'Maven'
-                sh 'mvn clean package'
+                // Checkout SCM using the specified Git tool
+                git branch: 'main', url: 'https://github.com/shawanaGideon/spring-petclinic.git'
             }
         }
 
-        stage('Test with JaCoCo') {
+        stage('Build Maven Project') {
             steps {
-                tool 'Maven'
-                sh 'mvn test jacoco:report'
-            }
-
-            post {
-                always {
-                    jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java'
-                }
+                sh 'mvn clean package' // Use the 'maven' tool from Jenkins to execute Maven commands
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Build was successful!'
-        }
+        stage('Code Coverage') {
+            steps {
+                // Run tests with coverage and generate coverage report
+                sh 'mvn clean test jacoco:prepare-agent jacoco:report'
 
-        failure {
-            echo 'Build failed.'
+                // Archive Jacoco coverage reports
+                jacoco(execPattern: 'target/**/*exec')
+            }
         }
     }
 }
